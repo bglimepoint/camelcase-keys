@@ -33,6 +33,7 @@ const transform = (input, options = {}) => {
 		stopPaths,
 		deep = false,
 		preserveConsecutiveUppercase = false,
+		isSeen = new WeakMap(),
 	} = options;
 
 	const stopPathsSet = new Set(stopPaths);
@@ -42,7 +43,7 @@ const transform = (input, options = {}) => {
 			const path = parentPath === undefined ? key : `${parentPath}.${key}`;
 
 			if (!stopPathsSet.has(path)) {
-				value = mapObject(value, makeMapper(path));
+				value = mapObject(value, makeMapper(path), {}, isSeen);
 			}
 		}
 
@@ -65,7 +66,7 @@ const transform = (input, options = {}) => {
 		return [key, value];
 	};
 
-	return mapObject(input, makeMapper(undefined));
+	return mapObject(input, makeMapper(undefined), {}, isSeen);
 };
 
 export default function camelcaseKeys(input, options) {
